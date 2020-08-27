@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block header %}
+<meta http-equiv="refresh" content="60">
+<script type = "text/javascript" 
+         src = "{{ url_for('static', filename = 'logic.js') }}" ></script>
+<style>
+.odd{
+    background-color:gainsboro;
+}
+th,td{
+    padding:5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>Data Factory Monitoring Demo</h1>
+    <div class="row">
+        <a href="{{url_for('failed')}}">
+        <div class="col-6">
+            <strong>{{failed_count}}<br/>{% if failed_count == 1 %} Pipeline {% else %} Piplines {% endif %} Failed</strong>
+        </div>
+        </a>
+        <div class="col-6">
+                <strong>{{total_count}}<br/>{% if total_count == 1 %} Pipeline {% else %} Piplines {% endif %} Ran in Past 7 Days</strong>
+            </div>
+    </div>
+    {% for row in results %}
+    
+    <div class="row {% if loop.index % 2 == 0 %}even{%else%}odd{%endif%}">
+        <div class="col-12" id="row-{{loop.index}}">
+            <h2>{{row.pipeline_name}}</h2>
+            <table>
+                <tr>
+                    <th>Details</th>
+                    <th>Pipeline ID</th>
+                    <th>Status</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+                <tr>
+                    <td><a href="javascript:query_activities('row-{{loop.index}}', '{{row.run_id}}')" class="detail_link">Details</a></td>
+                    <td><a href="{{row.adf_url}}" alt="{{row.run_id}}">{{row.run_id}}</a></td>
+                    <td>{{row.status}}</td>
+                    <td>{{row.run_start}}</td>
+                    <td>{{row.run_end}}</td>
+                </tr>
+            </table>
+            {% if row.annotations %}
+            <h4>Annotations</h4>
+            <p>{{row.annotations|safe}}</p>
+            {% endif %}
+            {% if row.parameters %}
+            <h4>Parameters</h4>
+            <p>{{row.parameters|safe}}</p>
+            {% endif %}
+            {% if row.message %}
+            <h4>Pipeline Message</h4>
+            <p>{{row.message|safe}}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    <script type="text/javascript">
+
+    </script>
+    
+{% endblock %}
